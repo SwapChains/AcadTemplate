@@ -12,7 +12,7 @@ import { modalities, whatsappLink } from '../data/site';
 
   <ul class="container cards">
     {modalities.map((m, i) => (
-      <li class="card" data-reveal style={`--i:${i % 3}`}>
+      <li class="card" data-reveal="zoom" style={`--i:${i % 3}`}>
         <a href={whatsappLink(`Olá! Quero fazer uma aula experimental de ${m.name}.`)} target="_blank" rel="noopener">
           <Media name={m.image} alt={m.name} widths={[400, 640, 900]} sizes="(max-width: 760px) 80vw, 33vw" class="card-media" />
           <div class="card-body">

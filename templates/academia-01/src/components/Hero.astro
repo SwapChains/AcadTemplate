@@ -66,8 +66,8 @@ const lines = hero.title.map((line) => line.split(' ').map((word) => [...word].m
 
   /* Parallax do fundo e saída do conteúdo ao rolar (CSS scroll-driven) */
   @supports (animation-timeline: scroll()) {
-    .hero-bg { animation: parallax linear both; animation-timeline: scroll(root); animation-range: 0 100svh; }
-    .hero-content { animation: exit linear both; animation-timeline: scroll(root); animation-range: 10svh 80svh; }
+    .hero-bg { animation-name: parallax; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: scroll(root); animation-range: 0 100svh; }
+    .hero-content { animation-name: exit; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: scroll(root); animation-range: 10svh 80svh; }
   }
   @keyframes parallax { to { translate: 0 25%; } }
   @keyframes exit { to { opacity: 0; translate: 0 -4rem; } }

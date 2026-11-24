@@ -10,7 +10,7 @@ import { team } from '../data/site';
     <SectionHeader eyebrow="Equipe" title="Quem treina você" text="Professores formados, com registro no CREF e anos de experiência em sala." />
     <ul class="grid">
       {team.map((p, i) => (
-        <li class="person" data-reveal style={`--i:${i}`}>
+        <li class="person" data-reveal="zoom" style={`--i:${i}`}>
           <div class="photo">
             <Media name={p.image} alt={`Foto de ${p.name}`} widths={[320, 480, 720]} sizes="(max-width: 760px) 50vw, 25vw" />
             <a class="ig" href={p.instagram} target="_blank" rel="noopener" aria-label={`Instagram de ${p.name}`}>

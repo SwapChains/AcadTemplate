@@ -9,7 +9,7 @@ import { structure } from '../data/site';
     <SectionHeader eyebrow="Estrutura" title={structure.title} text={structure.text} />
     <ul class="mosaic">
       {structure.images.map((img, i) => (
-        <li class={`tile tile--${i + 1}`} data-reveal style={`--i:${i % 3}`}>
+        <li class={`tile tile--${i + 1}`} data-reveal="zoom" style={`--i:${i % 3}`}>
           <Media name={img.image} alt={img.alt} widths={[400, 800, 1200]} sizes="(max-width: 760px) 100vw, 50vw" />
           <span class="cap">{img.alt}</span>
         </li>
@@ -34,7 +34,7 @@ import { structure } from '../data/site';
 
   /* Parallax sutil por tile, só onde há suporte a scroll-driven animations */
   @supports (animation-timeline: view()) {
-    .tile :global(.media) { inset: -8% 0; animation: drift linear both; animation-timeline: view(); }
+    .tile :global(.media) { inset: -8% 0; animation-name: drift; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: view(); }
     @keyframes drift { from { translate: 0 -6%; } to { translate: 0 6%; } }
   }
 

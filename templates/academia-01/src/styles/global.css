@@ -82,7 +82,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   pointer-events: none;
 }
 @supports (animation-timeline: scroll()) {
-  .scroll-progress { animation: grow-x linear both; animation-timeline: scroll(root); }
+  .scroll-progress { animation-name: grow-x; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: scroll(root); }
 }
 @keyframes grow-x { to { transform: scaleX(1); } }
 
@@ -95,16 +95,52 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .skip-link:focus { translate: 0 0; }
 
-/* ── Reveal on scroll ─────────────────────────────────────
-   Elementos com [data-reveal] começam ocultos e aparecem ao entrar
-   na tela (src/scripts/reveal.ts). Sem JS, aparecem normalmente. */
-.js [data-reveal] {
-  opacity: 0;
-  translate: 0 2rem;
-  transition: opacity var(--dur) var(--ease-out), translate var(--dur) var(--ease-out);
-  transition-delay: calc(var(--i, 0) * 90ms);
+/* ── Reveal ao rolar (aparece E desaparece) ───────────────
+   Uso: data-reveal (sobe) | data-reveal="zoom" | "left" | "right"
+   Atraso em cascata: style="--i:0..3".
+
+   1) Navegadores com scroll-driven animations (Chrome, Edge, Safari 26+):
+      a animação acompanha a rolagem nos dois sentidos, em CSS puro.
+   IMPORTANTE: use sempre as propriedades separadas (animation-name,
+   animation-timeline…), nunca o atalho `animation`. O minificador funde o
+   atalho com animation-timeline e o navegador descarta a regra inteira.
+   2) Demais (Firefox): src/scripts/reveal.ts alterna classes via
+      IntersectionObserver, com transição. Sem JS, tudo fica visível. */
+[data-reveal] { --rx: 0px; --ry: 3rem; --rs: 1; --stagger: min(var(--i, 0), 3); }
+[data-reveal='zoom'] { --ry: 2.5rem; --rs: 0.88; }
+[data-reveal='left'] { --rx: -4rem; --ry: 0px; }
+[data-reveal='right'] { --rx: 4rem; --ry: 0px; }
+
+@keyframes reveal-in {
+  from { opacity: 0; translate: var(--rx) var(--ry); scale: var(--rs); }
 }
-.js [data-reveal].is-visible { opacity: 1; translate: 0 0; }
+@keyframes reveal-out {
+  to { opacity: 0; translate: var(--rx) calc(var(--ry) * -0.6); scale: var(--rs); }
+}
+
+@supports (animation-timeline: view()) {
+  [data-reveal] {
+    animation-name: reveal-in, reveal-out;
+    animation-timing-function: linear;
+    animation-fill-mode: both, forwards;
+    animation-timeline: view(), view();
+    animation-range:
+      entry calc(var(--stagger) * 5%) cover calc(30% + var(--stagger) * 4%),
+      exit 10% exit 100%;
+  }
+}
+
+@supports not (animation-timeline: view()) {
+  .js [data-reveal] {
+    opacity: 0;
+    translate: var(--rx) var(--ry);
+    scale: var(--rs);
+    transition: opacity var(--dur) var(--ease-out), translate var(--dur) var(--ease-out), scale var(--dur) var(--ease-out);
+    transition-delay: calc(var(--stagger) * 90ms);
+  }
+  .js [data-reveal].is-visible { opacity: 1; translate: 0 0; scale: 1; }
+  .js [data-reveal].is-above { translate: var(--rx) calc(var(--ry) * -0.6); transition-delay: 0s; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -113,5 +149,5 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .js [data-reveal] { opacity: 1; translate: none; }
+  [data-reveal], .js [data-reveal] { animation: none !important; opacity: 1 !important; translate: none !important; scale: none !important; }
 }

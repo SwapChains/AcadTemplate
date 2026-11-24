@@ -11,10 +11,10 @@ const mapLink = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
 <section class="cta" aria-labelledby="cta-title">
   <div class="cta-bg" aria-hidden="true"><span class="display">{site.name}</span></div>
   <div class="container cta-inner">
-    <h2 class="display" id="cta-title" data-reveal>
+    <h2 class="display" id="cta-title" data-reveal="left">
       {finalCta.title[0]}<br /><span class="outline-dark">{finalCta.title[1]}</span>
     </h2>
-    <div class="cta-side" data-reveal style="--i:1">
+    <div class="cta-side" data-reveal="right" style="--i:1">
       <p>{finalCta.text}</p>
       <a class="btn btn--dark" href={whatsappLink()} target="_blank" rel="noopener">
         <Icon name="whatsapp" />{finalCta.cta}
@@ -30,19 +30,19 @@ const mapLink = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
       <h2 class="display" data-reveal style="--i:1">Venha nos visitar</h2>
 
       <ul class="items">
-        <li data-reveal style="--i:2">
+        <li data-reveal="left" style="--i:2">
           <Icon name="pin" />
           <div><strong>Endereço</strong><a href={mapLink} target="_blank" rel="noopener">{fullAddress}</a></div>
         </li>
-        <li data-reveal style="--i:3">
+        <li data-reveal="left" style="--i:3">
           <Icon name="phone" />
           <div><strong>Telefone / WhatsApp</strong><a href={whatsappLink()} target="_blank" rel="noopener">{c.phone}</a></div>
         </li>
-        <li data-reveal style="--i:4">
+        <li data-reveal="left" style="--i:4">
           <Icon name="mail" />
           <div><strong>E-mail</strong><a href={`mailto:${c.email}`}>{c.email}</a></div>
         </li>
-        <li data-reveal style="--i:5">
+        <li data-reveal="left" style="--i:5">
           <Icon name="clock" />
           <div>
             <strong>Funcionamento</strong>
@@ -55,7 +55,7 @@ const mapLink = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
     </div>
 
     <!-- Mapa só carrega ao clicar: economiza ~500 KB e várias requisições de terceiros -->
-    <div class="map" data-map={mapEmbed} data-reveal style="--i:2">
+    <div class="map" data-map={mapEmbed} data-reveal="right" style="--i:2">
       <div class="map-grid" aria-hidden="true"></div>
       <span class="map-pin" aria-hidden="true"><Icon name="pin" /></span>
       <button type="button" class="btn" data-map-btn>Carregar mapa</button>
@@ -70,7 +70,7 @@ const mapLink = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
   .cta-bg { position: absolute; inset: 0; z-index: -1; display: grid; place-items: center; }
   .cta-bg span { font-size: 38vw; line-height: 0.8; color: transparent; -webkit-text-stroke: 1px rgb(0 0 0 / 0.08); white-space: nowrap; }
   @supports (animation-timeline: view()) {
-    .cta-bg span { animation: cta-drift linear both; animation-timeline: view(); }
+    .cta-bg span { animation-name: cta-drift; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: view(); }
     @keyframes cta-drift { from { translate: 15% 0; } to { translate: -15% 0; } }
   }
   .cta-inner { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 2rem 4rem; }
