@@ -1,0 +1,31 @@
+/* Design tokens — trocar estas variáveis muda a identidade visual inteira. */
+:root {
+  color-scheme: dark;
+
+  /* Cores */
+  --c-bg: #0b0b0c;
+  --c-surface: #141416;
+  --c-surface-2: #1c1c20;
+  --c-line: #2a2a30;
+  --c-fg: #f4f4f2;
+  --c-muted: #9b9ba3;
+  --c-accent: #c6ff3d;      /* verde-limão "volt" */
+  --c-accent-fg: #0b0b0c;   /* texto sobre o accent */
+
+  /* Tipografia */
+  --f-display: 'Archivo Variable', 'Arial Narrow', sans-serif;
+  --f-body: 'Inter Variable', system-ui, sans-serif;
+  --fs-hero: clamp(3.5rem, 12vw, 11rem);
+  --fs-h2: clamp(2.25rem, 6vw, 5rem);
+  --fs-h3: clamp(1.25rem, 2.2vw, 1.6rem);
+
+  /* Espaço e forma */
+  --container: 76rem;
+  --gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --section-y: clamp(5rem, 12vw, 9rem);
+  --radius: 1rem;
+
+  /* Movimento */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 0.7s;
+}

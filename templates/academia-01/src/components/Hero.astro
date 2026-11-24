@@ -1,0 +1,100 @@
+---
+import Media from './Media.astro';
+import Icon from './Icon.astro';
+import { hero, whatsappLink } from '../data/site';
+
+// Quebra o título em letras no build: animação 100% CSS, zero JS.
+let n = 0;
+const lines = hero.title.map((line) => line.split(' ').map((word) => [...word].map((ch) => ({ ch, d: n++ }))));
+---
+
+<section class="hero" id="inicio">
+  <div class="hero-bg" aria-hidden="true">
+    <Media name={hero.image} mobileName={hero.imageMobile} alt="" priority widths={[640, 960, 1280, 1920, 2560]} class="hero-media" />
+  </div>
+
+  <div class="container hero-content">
+    <p class="eyebrow hero-fade" style="--t:0.1s">{hero.eyebrow}</p>
+
+    <h1 class="display hero-title" aria-label={hero.title.join(' ')}>
+      {lines.map((words, li) => (
+        <span class:list={['line', { outline: li === lines.length - 1 }]} aria-hidden="true">
+          {words.map((letters) => (
+            <span class="word">
+              {letters.map(({ ch, d }) => <span class="ch" style={`--d:${d}`}>{ch}</span>)}
+            </span>
+          ))}
+        </span>
+      ))}
+    </h1>
+
+    <div class="hero-bottom">
+      <p class="lead hero-fade" style="--t:0.9s">{hero.text}</p>
+      <div class="actions hero-fade" style="--t:1.05s">
+        <a class="btn" href={whatsappLink()} target="_blank" rel="noopener">
+          {hero.primaryCta}<Icon name="arrow" />
+        </a>
+        <a class="btn btn--ghost" href={hero.secondaryCta.href}>{hero.secondaryCta.label}</a>
+      </div>
+    </div>
+  </div>
+
+  <a class="scroll-cue hero-fade" style="--t:1.4s" href="#sobre" aria-label="Rolar para o conteúdo"><span></span></a>
+</section>
+
+<style>
+  .hero {
+    position: relative; isolation: isolate;
+    min-height: 100svh;
+    display: flex; align-items: flex-end;
+    padding-block: 8rem clamp(3rem, 8vh, 6rem);
+    overflow: hidden;
+  }
+
+  /* Fundo: zoom lento + escurecimento para leitura do texto */
+  .hero-bg { position: absolute; inset: 0; z-index: -1; }
+  .hero-bg::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(to top, var(--c-bg) 2%, transparent 55%),
+      linear-gradient(to right, rgb(11 11 12 / 0.85), rgb(11 11 12 / 0.2) 70%);
+  }
+  .hero-bg :global(.hero-media) { position: absolute; inset: 0; }
+  .hero-bg :global(.hero-media img) { filter: grayscale(1) contrast(1.1) brightness(0.8); }
+  .hero-bg :global(.hero-media picture), .hero-bg :global(.hero-media .ph) { animation: kenburns 18s var(--ease-out) both; }
+  @keyframes kenburns { from { scale: 1.18; } to { scale: 1; } }
+
+  /* Parallax do fundo e saída do conteúdo ao rolar (CSS scroll-driven) */
+  @supports (animation-timeline: scroll()) {
+    .hero-bg { animation: parallax linear both; animation-timeline: scroll(root); animation-range: 0 100svh; }
+    .hero-content { animation: exit linear both; animation-timeline: scroll(root); animation-range: 10svh 80svh; }
+  }
+  @keyframes parallax { to { translate: 0 25%; } }
+  @keyframes exit { to { opacity: 0; translate: 0 -4rem; } }
+
+  .hero-content { display: grid; gap: 1.5rem; }
+  .hero-title { font-size: var(--fs-hero); display: grid; }
+  .line { display: flex; flex-wrap: wrap; column-gap: 0.22em; }
+  .line.outline { -webkit-text-stroke-width: clamp(1px, 0.25vw, 3px); }
+  .word { display: inline-flex; overflow: hidden; padding-block: 0.04em; margin-block: -0.04em; }
+  .ch { display: inline-block; animation: rise 0.9s var(--ease-out) both; animation-delay: calc(0.25s + var(--d) * 0.035s); }
+  @keyframes rise { from { translate: 0 105%; } }
+
+  .hero-bottom { display: grid; justify-items: start; gap: 1.75rem; margin-top: 0.75rem; }
+  .lead { color: color-mix(in srgb, var(--c-fg) 75%, transparent); max-width: 42ch; font-size: clamp(1rem, 1.4vw, 1.2rem); }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+  .hero-fade { animation: fade-up 0.9s var(--ease-out) both; animation-delay: var(--t); }
+  @keyframes fade-up { from { opacity: 0; translate: 0 1.5rem; } }
+
+  .scroll-cue {
+    position: absolute; left: 50%; bottom: 1.25rem; translate: -50% 0;
+    width: 1.5rem; height: 2.4rem; border: 2px solid var(--c-line); border-radius: 99px;
+  }
+  .scroll-cue span {
+    position: absolute; left: 50%; top: 0.45rem; width: 3px; height: 0.5rem; margin-left: -1.5px;
+    border-radius: 2px; background: var(--c-accent); animation: wheel 1.8s ease-in-out infinite;
+  }
+  @keyframes wheel { 0% { opacity: 0; translate: 0 0; } 30% { opacity: 1; } 100% { opacity: 0; translate: 0 0.8rem; } }
+  @media (max-width: 640px) { .scroll-cue { display: none; } }
+</style>

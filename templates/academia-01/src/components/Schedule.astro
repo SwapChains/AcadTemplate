@@ -1,0 +1,142 @@
+---
+import SectionHeader from './SectionHeader.astro';
+import { schedule } from '../data/site';
+
+const days = [
+  { n: 1, short: 'Seg', long: 'Segunda' },
+  { n: 2, short: 'Ter', long: 'Terça' },
+  { n: 3, short: 'Qua', long: 'Quarta' },
+  { n: 4, short: 'Qui', long: 'Quinta' },
+  { n: 5, short: 'Sex', long: 'Sexta' },
+  { n: 6, short: 'Sáb', long: 'Sábado' },
+  { n: 0, short: 'Dom', long: 'Domingo' },
+];
+const byDay = (n: number) => schedule.classes.filter((c) => c.days.includes(n)).sort((a, b) => a.time.localeCompare(b.time));
+---
+
+<section class="section schedule" id="horarios">
+  <div class="container">
+    <SectionHeader eyebrow="Grade de aulas" title="Horários" text="Aulas coletivas inclusas a partir do plano Plus. O destaque mostra o que está rolando agora." />
+
+    <div class="tabs" data-tabs data-duration={schedule.duration} data-reveal>
+      <div class="tablist" role="tablist" aria-label="Dia da semana">
+        {days.map((d, i) => (
+          <button role="tab" id={`tab-${d.n}`} aria-controls={`panel-${d.n}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-day={d.n}>
+            <span class="short">{d.short}</span><span class="long">{d.long}</span>
+          </button>
+        ))}
+      </div>
+
+      {days.map((d, i) => (
+        <ul class="panel" role="tabpanel" id={`panel-${d.n}`} aria-labelledby={`tab-${d.n}`} hidden={i !== 0} data-panel={d.n}>
+          {byDay(d.n).map((c) => (
+            <li class="row" data-time={c.time}>
+              <time class="display">{c.time}</time>
+              <strong>{c.name}</strong>
+              <span class="coach">com {c.coach}</span>
+              <span class="badge" aria-hidden="true"></span>
+            </li>
+          ))}
+          {byDay(d.n).length === 0 && <li class="empty">Sem aulas coletivas neste dia. Musculação liberada!</li>}
+        </ul>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .tabs { background: var(--c-surface); border: 1px solid var(--c-line); border-radius: calc(var(--radius) * 1.5); padding: clamp(0.75rem, 2vw, 1.25rem); }
+  .tablist { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.35rem; margin-bottom: 1rem; }
+  [role='tab'] {
+    padding: 0.85rem 0.5rem; border-radius: 0.75rem; font-weight: 600; color: var(--c-muted);
+    transition: background 0.25s, color 0.25s;
+  }
+  [role='tab']:hover { color: var(--c-fg); background: var(--c-surface-2); }
+  [role='tab'][aria-selected='true'] { background: var(--c-accent); color: var(--c-accent-fg); }
+  .long { display: none; }
+  @media (min-width: 900px) { .short { display: none; } .long { display: inline; } }
+
+  .panel { display: grid; }
+  .panel[hidden] { display: none; }
+  .panel:not([hidden]) .row { animation: row-in 0.45s var(--ease-out) both; }
+  .panel .row:nth-child(2) { animation-delay: 0.04s; } .panel .row:nth-child(3) { animation-delay: 0.08s; }
+  .panel .row:nth-child(4) { animation-delay: 0.12s; } .panel .row:nth-child(n + 5) { animation-delay: 0.16s; }
+  @keyframes row-in { from { opacity: 0; translate: 0 0.75rem; } }
+
+  .row {
+    display: grid; grid-template-columns: 6rem 1fr auto auto; align-items: center; gap: 1rem;
+    padding: 1rem 1.25rem; border-radius: 0.75rem;
+    transition: background 0.2s;
+  }
+  .row + .row { border-top: 1px solid var(--c-line); }
+  .row:hover { background: var(--c-surface-2); }
+  time { font-size: 1.6rem; color: var(--c-muted); }
+  strong { font-size: 1.05rem; }
+  .coach { color: var(--c-muted); font-size: 0.9rem; }
+  .badge:empty { display: none; }
+  .badge { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.3rem 0.6rem; border-radius: 99px; }
+  .row.is-now { background: color-mix(in srgb, var(--c-accent) 10%, transparent); }
+  .row.is-now time { color: var(--c-accent); }
+  .row.is-now .badge { background: var(--c-accent); color: var(--c-accent-fg); }
+  .row.is-now .badge::before { content: '● '; animation: blink 1.2s steps(2) infinite; }
+  .row.is-next .badge { border: 1px solid var(--c-line); color: var(--c-muted); }
+  @keyframes blink { 50% { opacity: 0; } }
+  .empty { padding: 2rem 1.25rem; color: var(--c-muted); }
+
+  @media (max-width: 600px) {
+    .tablist { gap: 0.2rem; }
+    [role='tab'] { padding: 0.7rem 0.2rem; font-size: 0.85rem; }
+    .row { grid-template-columns: 4.5rem 1fr; row-gap: 0.1rem; padding: 0.9rem 0.75rem; }
+    time { grid-row: span 2; font-size: 1.35rem; }
+    .coach { grid-column: 2; }
+    .badge { grid-column: 2; justify-self: start; margin-top: 0.35rem; }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-tabs]');
+  if (root) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const duration = Number(root.dataset.duration) || 50;
+
+    const select = (tab: HTMLButtonElement, focus = false) => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        root.querySelector<HTMLElement>(`#${t.getAttribute('aria-controls')}`)!.hidden = !on;
+      });
+      if (focus) tab.focus();
+    };
+
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(t));
+      t.addEventListener('keydown', (e) => {
+        const dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (dir) select(tabs[(i + dir + tabs.length) % tabs.length], true);
+      });
+    });
+
+    // Abre no dia de hoje e destaca a aula "agora" / "próxima".
+    const now = new Date();
+    const today = tabs.find((t) => Number(t.dataset.day) === now.getDay());
+    if (today) select(today);
+
+    const mins = now.getHours() * 60 + now.getMinutes();
+    const panel = root.querySelector<HTMLElement>(`[data-panel="${now.getDay()}"]`);
+    let nextMarked = false;
+    panel?.querySelectorAll<HTMLElement>('[data-time]').forEach((row) => {
+      const [h, m] = row.dataset.time!.split(':').map(Number);
+      const start = h * 60 + m;
+      const badge = row.querySelector('.badge')!;
+      if (mins >= start && mins < start + duration) {
+        row.classList.add('is-now');
+        badge.textContent = 'Agora';
+      } else if (start > mins && !nextMarked) {
+        row.classList.add('is-next');
+        badge.textContent = 'Próxima';
+        nextMarked = true;
+      }
+    });
+  }
+</script>

@@ -1,0 +1,63 @@
+---
+import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource-variable/inter';
+import '../styles/global.css';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = `${site.name} ${site.tagline} | Musculação, Cross e Lutas`, description = site.description } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const c = site.contact;
+
+// Dados estruturados para busca local (Google Maps / resultados de academia).
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ExerciseGym',
+  name: `${site.name} ${site.tagline}`,
+  description,
+  url: canonical,
+  telephone: c.phone,
+  email: c.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: c.street,
+    addressLocality: c.city,
+    addressRegion: c.state,
+    postalCode: c.postalCode,
+    addressCountry: 'BR',
+  },
+  sameAs: [c.instagram],
+};
+---
+
+<!doctype html>
+<html lang={site.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0b0b0c" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <!-- Marca a página como "com JS" antes de pintar, evitando flash do reveal -->
+    <script is:inline>document.documentElement.classList.add('js')</script>
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <slot />
+    <script>import '../scripts/reveal';</script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "website-models",
+  "private": true,
+  "description": "Coleção de templates de websites para estabelecimentos (Astro).",
+  "type": "module",
+  "workspaces": [
+    "gallery",
+    "templates/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "npm run dev -w gallery",
+    "dev:academia-01": "npm run dev -w templates/academia-01",
+    "build": "node scripts/build-all.mjs",
+    "preview": "npx --yes serve dist"
+  }
+}

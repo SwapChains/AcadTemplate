@@ -1,0 +1,63 @@
+---
+// <details> nativo: acessível e sem JS. A abertura anima onde o navegador
+// suporta ::details-content + interpolate-size (Chrome/Edge); nos demais abre direto.
+import Icon from './Icon.astro';
+import { faq, whatsappLink } from '../data/site';
+---
+
+<section class="section" id="faq">
+  <div class="container layout">
+    <div class="intro">
+      <p class="eyebrow" data-reveal>Dúvidas</p>
+      <h2 class="display" data-reveal style="--i:1">Perguntas frequentes</h2>
+      <p class="muted" data-reveal style="--i:2">Não achou o que procurava?</p>
+      <a class="btn btn--ghost" href={whatsappLink('Olá! Tenho uma dúvida sobre a academia.')} target="_blank" rel="noopener" data-reveal style="--i:3">
+        Falar no WhatsApp <Icon name="arrow" />
+      </a>
+    </div>
+
+    <div class="list">
+      {faq.map((item, i) => (
+        <details name="faq" data-reveal style={`--i:${i % 4}`}>
+          <summary>
+            <span>{item.q}</span>
+            <Icon name="plus" class="icon" />
+          </summary>
+          <p>{item.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: clamp(2rem, 6vw, 5rem); align-items: start; }
+  .intro { display: grid; gap: 1rem; justify-items: start; position: sticky; top: 7rem; }
+  h2 { font-size: var(--fs-h2); }
+  .muted { color: var(--c-muted); }
+
+  details { border-bottom: 1px solid var(--c-line); }
+  details:first-child { border-top: 1px solid var(--c-line); }
+  summary {
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    padding: 1.4rem 0; cursor: pointer; list-style: none;
+    font-weight: 600; font-size: clamp(1rem, 1.6vw, 1.15rem);
+    transition: color 0.2s;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary:hover { color: var(--c-accent); }
+  summary :global(.icon) { width: 1.4rem; height: 1.4rem; flex: none; transition: rotate 0.35s var(--ease-out), color 0.2s; }
+  details[open] summary :global(.icon) { rotate: 45deg; color: var(--c-accent); }
+  details p { color: var(--c-muted); padding-bottom: 1.4rem; max-width: 60ch; }
+
+  details::details-content {
+    block-size: 0; overflow: hidden;
+    transition: block-size 0.4s var(--ease-out), content-visibility 0.4s allow-discrete;
+  }
+  details[open]::details-content { block-size: auto; }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .intro { position: static; }
+  }
+</style>

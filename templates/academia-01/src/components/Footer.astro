@@ -1,0 +1,45 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { site, nav, whatsappLink } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container top">
+    <div class="brand">
+      <Logo />
+      <p>{site.description}</p>
+    </div>
+    <nav aria-label="Rodapé">
+      <ul>{nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}</ul>
+    </nav>
+    <div class="social">
+      <a href={site.contact.instagram} target="_blank" rel="noopener" aria-label="Instagram"><Icon name="instagram" /></a>
+      <a href={whatsappLink()} target="_blank" rel="noopener" aria-label="WhatsApp"><Icon name="whatsapp" /></a>
+    </div>
+  </div>
+  <div class="container bottom">
+    <p>© {year} {site.name} {site.tagline}. Todos os direitos reservados.</p>
+    <p>Site por <a href={site.credit.url} target="_blank" rel="noopener">{site.credit.label}</a></p>
+  </div>
+</footer>
+
+<style>
+  .footer { border-top: 1px solid var(--c-line); padding-top: clamp(3rem, 6vw, 4.5rem); }
+  .top { display: grid; grid-template-columns: 2fr 1fr auto; gap: 2rem 3rem; padding-bottom: 3rem; }
+  .brand { display: grid; gap: 1rem; justify-items: start; max-width: 26rem; }
+  .brand p { color: var(--c-muted); font-size: 0.95rem; }
+  nav ul { display: grid; gap: 0.6rem; }
+  nav a, .bottom a { text-decoration: none; color: var(--c-muted); transition: color 0.2s; }
+  nav a:hover, .bottom a:hover { color: var(--c-accent); }
+  .social { display: flex; gap: 0.6rem; }
+  .social a {
+    display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%;
+    border: 1px solid var(--c-line); transition: background 0.25s, color 0.25s, border-color 0.25s;
+  }
+  .social a:hover { background: var(--c-accent); color: var(--c-accent-fg); border-color: var(--c-accent); }
+  .social :global(svg) { width: 1.2rem; height: 1.2rem; }
+  .bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 2rem; padding-block: 1.5rem; border-top: 1px solid var(--c-line); color: var(--c-muted); font-size: 0.85rem; }
+  @media (max-width: 760px) { .top { grid-template-columns: 1fr; } }
+</style>

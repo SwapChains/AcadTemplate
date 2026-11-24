@@ -1,0 +1,137 @@
+---
+import Icon from './Icon.astro';
+import { site, finalCta, fullAddress, whatsappLink } from '../data/site';
+
+const c = site.contact;
+const mapQuery = encodeURIComponent(`${c.street}, ${c.district}, ${c.city} - ${c.state}`);
+const mapEmbed = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
+const mapLink = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+---
+
+<section class="cta" aria-labelledby="cta-title">
+  <div class="cta-bg" aria-hidden="true"><span class="display">{site.name}</span></div>
+  <div class="container cta-inner">
+    <h2 class="display" id="cta-title" data-reveal>
+      {finalCta.title[0]}<br /><span class="outline-dark">{finalCta.title[1]}</span>
+    </h2>
+    <div class="cta-side" data-reveal style="--i:1">
+      <p>{finalCta.text}</p>
+      <a class="btn btn--dark" href={whatsappLink()} target="_blank" rel="noopener">
+        <Icon name="whatsapp" />{finalCta.cta}
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section contact" id="contato">
+  <div class="container grid">
+    <div class="info">
+      <p class="eyebrow" data-reveal>Contato</p>
+      <h2 class="display" data-reveal style="--i:1">Venha nos visitar</h2>
+
+      <ul class="items">
+        <li data-reveal style="--i:2">
+          <Icon name="pin" />
+          <div><strong>Endereço</strong><a href={mapLink} target="_blank" rel="noopener">{fullAddress}</a></div>
+        </li>
+        <li data-reveal style="--i:3">
+          <Icon name="phone" />
+          <div><strong>Telefone / WhatsApp</strong><a href={whatsappLink()} target="_blank" rel="noopener">{c.phone}</a></div>
+        </li>
+        <li data-reveal style="--i:4">
+          <Icon name="mail" />
+          <div><strong>E-mail</strong><a href={`mailto:${c.email}`}>{c.email}</a></div>
+        </li>
+        <li data-reveal style="--i:5">
+          <Icon name="clock" />
+          <div>
+            <strong>Funcionamento</strong>
+            <dl class="hours">
+              {site.hours.map((h) => (<><dt>{h.days}</dt><dd>{h.time}</dd></>))}
+            </dl>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Mapa só carrega ao clicar: economiza ~500 KB e várias requisições de terceiros -->
+    <div class="map" data-map={mapEmbed} data-reveal style="--i:2">
+      <div class="map-grid" aria-hidden="true"></div>
+      <span class="map-pin" aria-hidden="true"><Icon name="pin" /></span>
+      <button type="button" class="btn" data-map-btn>Carregar mapa</button>
+      <a class="map-ext" href={mapLink} target="_blank" rel="noopener">Abrir no Google Maps</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ── Faixa de CTA ───────────────────────── */
+  .cta { position: relative; overflow: hidden; background: var(--c-accent); color: var(--c-accent-fg); padding-block: clamp(4rem, 10vw, 7rem); isolation: isolate; }
+  .cta-bg { position: absolute; inset: 0; z-index: -1; display: grid; place-items: center; }
+  .cta-bg span { font-size: 38vw; line-height: 0.8; color: transparent; -webkit-text-stroke: 1px rgb(0 0 0 / 0.08); white-space: nowrap; }
+  @supports (animation-timeline: view()) {
+    .cta-bg span { animation: cta-drift linear both; animation-timeline: view(); }
+    @keyframes cta-drift { from { translate: 15% 0; } to { translate: -15% 0; } }
+  }
+  .cta-inner { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 2rem 4rem; }
+  .cta h2 { font-size: clamp(3rem, 9vw, 7.5rem); }
+  .outline-dark { color: transparent; -webkit-text-stroke: clamp(1px, 0.2vw, 2.5px) var(--c-accent-fg); }
+  .cta-side { display: grid; gap: 1.25rem; max-width: 24rem; font-size: 1.1rem; font-weight: 500; }
+  .cta-side .btn { justify-self: start; }
+  .cta .btn--dark:hover { box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.6); }
+
+  /* ── Contato ────────────────────────────── */
+  .grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(2rem, 6vw, 5rem); align-items: stretch; }
+  .info { display: grid; gap: 1rem; align-content: start; }
+  .info h2 { font-size: var(--fs-h2); margin-bottom: 1rem; }
+  .items { display: grid; gap: 1.5rem; }
+  .items li { display: flex; gap: 1rem; }
+  .items li > :global(svg) { width: 1.4rem; height: 1.4rem; flex: none; color: var(--c-accent); margin-top: 0.2rem; }
+  .items div { display: grid; gap: 0.15rem; }
+  .items strong { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--c-muted); font-weight: 600; }
+  .items a { text-decoration: none; font-size: 1.05rem; transition: color 0.2s; }
+  .items a:hover { color: var(--c-accent); }
+  .hours { display: grid; grid-template-columns: auto auto; gap: 0.2rem 1.5rem; justify-content: start; }
+  .hours dd { font-weight: 600; }
+
+  .map {
+    position: relative; min-height: 26rem; border-radius: calc(var(--radius) * 1.5); overflow: hidden;
+    border: 1px solid var(--c-line); background: var(--c-surface);
+    display: grid; place-items: center; align-content: center; gap: 1rem;
+  }
+  .map-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--c-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--c-line) 1px, transparent 1px),
+      linear-gradient(35deg, transparent 48%, var(--c-surface-2) 48% 52%, transparent 52%),
+      linear-gradient(120deg, transparent 60%, var(--c-surface-2) 60% 63%, transparent 63%);
+    background-size: 48px 48px, 48px 48px, 100% 100%, 100% 100%;
+    mask-image: radial-gradient(circle at center, #000 30%, transparent 75%);
+    opacity: 0.6;
+  }
+  .map-pin { position: relative; color: var(--c-accent); animation: bob 2s ease-in-out infinite; }
+  .map-pin :global(svg) { width: 3rem; height: 3rem; }
+  .map-pin::after { content: ''; position: absolute; left: 50%; bottom: -0.6rem; width: 1.5rem; height: 0.4rem; margin-left: -0.75rem; border-radius: 50%; background: rgb(0 0 0 / 0.5); }
+  @keyframes bob { 50% { translate: 0 -0.5rem; } }
+  .map .btn, .map-ext { position: relative; }
+  .map-ext { font-size: 0.85rem; color: var(--c-muted); }
+  .map iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; filter: grayscale(1) invert(0.92) contrast(0.9); }
+
+  @media (max-width: 860px) {
+    .grid { grid-template-columns: 1fr; }
+    .map { min-height: 20rem; }
+  }
+</style>
+
+<script>
+  const map = document.querySelector<HTMLElement>('[data-map]');
+  map?.querySelector('[data-map-btn]')?.addEventListener('click', () => {
+    const iframe = document.createElement('iframe');
+    iframe.src = map.dataset.map!;
+    iframe.title = 'Mapa com a localização da academia';
+    iframe.loading = 'lazy';
+    iframe.referrerPolicy = 'no-referrer-when-downgrade';
+    map.replaceChildren(iframe);
+  });
+</script>

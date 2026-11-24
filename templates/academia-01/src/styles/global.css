@@ -1,0 +1,117 @@
+@import './tokens.css';
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+:root { interpolate-size: allow-keywords; }
+html { -webkit-text-size-adjust: none; scroll-behavior: smooth; scroll-padding-top: 5rem; }
+body {
+  font-family: var(--f-body);
+  background: var(--c-bg);
+  color: var(--c-fg);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+img, picture, video, svg { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+ul { list-style: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+::selection { background: var(--c-accent); color: var(--c-accent-fg); }
+:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; border-radius: 4px; }
+
+.container { width: min(100% - 2 * var(--gutter), var(--container)); margin-inline: auto; }
+.section { padding-block: var(--section-y); position: relative; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+.display {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  text-transform: uppercase;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+}
+.outline {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--c-fg);
+}
+.accent { color: var(--c-accent); }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 0.75rem;
+  color: var(--c-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.eyebrow::before { content: ''; width: 2rem; height: 2px; background: currentColor; }
+
+/* ── Botões ─────────────────────────────────────────────── */
+.btn {
+  --_bg: var(--c-accent);
+  --_fg: var(--c-accent-fg);
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+  background: var(--_bg);
+  color: var(--_fg);
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  padding: 1rem 1.6rem;
+  border-radius: 99px;
+  border: 1px solid var(--_bg);
+  transition: transform 0.25s var(--ease-out), box-shadow 0.25s, background 0.25s, color 0.25s;
+  white-space: nowrap;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px -12px var(--c-accent); }
+.btn svg { width: 1.15em; height: 1.15em; transition: transform 0.25s var(--ease-out); }
+.btn:hover svg { transform: translateX(3px); }
+.btn--ghost { --_bg: transparent; --_fg: var(--c-fg); border-color: var(--c-line); }
+.btn--ghost:hover { border-color: var(--c-fg); box-shadow: none; }
+.btn--dark { --_bg: var(--c-accent-fg); --_fg: var(--c-accent); }
+
+/* ── Barra de progresso da rolagem (CSS puro) ───────────── */
+.scroll-progress {
+  position: fixed; inset: 0 0 auto; height: 3px; z-index: 100;
+  background: var(--c-accent);
+  transform-origin: left; transform: scaleX(0);
+  pointer-events: none;
+}
+@supports (animation-timeline: scroll()) {
+  .scroll-progress { animation: grow-x linear both; animation-timeline: scroll(root); }
+}
+@keyframes grow-x { to { transform: scaleX(1); } }
+
+/* ── Skip link ─────────────────────────────────────────── */
+.skip-link {
+  position: fixed; top: 0.75rem; left: 0.75rem; z-index: 200;
+  padding: 0.6rem 1rem; border-radius: 0.5rem;
+  background: var(--c-accent); color: var(--c-accent-fg); font-weight: 700;
+  translate: 0 -200%;
+}
+.skip-link:focus { translate: 0 0; }
+
+/* ── Reveal on scroll ─────────────────────────────────────
+   Elementos com [data-reveal] começam ocultos e aparecem ao entrar
+   na tela (src/scripts/reveal.ts). Sem JS, aparecem normalmente. */
+.js [data-reveal] {
+  opacity: 0;
+  translate: 0 2rem;
+  transition: opacity var(--dur) var(--ease-out), translate var(--dur) var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+.js [data-reveal].is-visible { opacity: 1; translate: 0 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .js [data-reveal] { opacity: 1; translate: none; }
+}

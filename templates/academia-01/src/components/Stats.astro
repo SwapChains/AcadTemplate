@@ -1,0 +1,62 @@
+---
+import { stats } from '../data/site';
+const fmt = (n: number) => n.toLocaleString('pt-BR');
+---
+
+<section class="section stats" id="sobre" aria-label="Números">
+  <div class="container">
+    <ul class="grid">
+      {stats.map((s, i) => (
+        <li data-reveal style={`--i:${i}`}>
+          <strong class="display">
+            <span data-count={s.value}>{fmt(s.value)}</span><em class="accent">{s.suffix}</em>
+          </strong>
+          <span class="label">{s.label}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .stats { padding-block: clamp(3rem, 8vw, 6rem); }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); border-block: 1px solid var(--c-line); }
+  li { padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 2vw, 2rem); display: grid; gap: 0.5rem; }
+  li + li { border-left: 1px solid var(--c-line); }
+  strong { font-size: clamp(3rem, 7vw, 5.5rem); font-variant-numeric: tabular-nums; }
+  em { font-style: normal; font-size: 0.55em; margin-left: 0.1em; text-transform: none; }
+  .label { color: var(--c-muted); font-size: 0.95rem; }
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    li:nth-child(3) { border-left: 0; }
+    li:nth-child(n + 3) { border-top: 1px solid var(--c-line); }
+  }
+</style>
+
+<script>
+  // Conta de 0 até o valor quando o número entra na tela.
+  const els = document.querySelectorAll<HTMLElement>('[data-count]');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fmt = (n: number) => n.toLocaleString('pt-BR');
+
+  if (!reduce && 'IntersectionObserver' in window) {
+    const run = (el: HTMLElement) => {
+      const target = Number(el.dataset.count);
+      const t0 = performance.now();
+      const dur = 1800;
+      const tick = (t: number) => {
+        const p = Math.min((t - t0) / dur, 1);
+        el.textContent = fmt(Math.round(target * (1 - Math.pow(1 - p, 4))));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => {
+        if (e.isIntersecting) { run(e.target as HTMLElement); io.unobserve(e.target); }
+      }),
+      { threshold: 0.6 },
+    );
+    els.forEach((el) => { el.textContent = '0'; io.observe(el); });
+  }
+</script>

@@ -1,0 +1,30 @@
+---
+// Faixa diagonal infinita. 100% CSS: o conteúdo é duplicado e desliza 50%.
+import { marquee } from '../data/site';
+---
+
+<div class="marquee-wrap" aria-label={`Modalidades: ${marquee.join(', ')}`} role="region">
+  <div class="band band--a" aria-hidden="true">
+    <div class="track">
+      {[0, 1].map(() => marquee.map((item) => <span class="item display">{item}<i>✦</i></span>))}
+    </div>
+  </div>
+  <div class="band band--b" aria-hidden="true">
+    <div class="track track--rev">
+      {[0, 1].map(() => marquee.map((item) => <span class="item display">{item}<i>✦</i></span>))}
+    </div>
+  </div>
+</div>
+
+<style>
+  .marquee-wrap { position: relative; height: clamp(8rem, 16vw, 12rem); display: grid; place-items: center; overflow: clip; }
+  .band { position: absolute; width: 110%; overflow: hidden; padding-block: 0.9rem; }
+  .band--a { background: var(--c-accent); color: var(--c-accent-fg); rotate: -3deg; z-index: 1; }
+  .band--b { background: var(--c-surface-2); color: var(--c-muted); rotate: 2.5deg; }
+  .track { display: flex; width: max-content; animation: slide 40s linear infinite; }
+  .track--rev { animation-direction: reverse; animation-duration: 55s; }
+  .marquee-wrap:hover .track { animation-play-state: paused; }
+  .item { display: inline-flex; align-items: center; gap: 1.5rem; padding-right: 1.5rem; font-size: clamp(1.4rem, 3vw, 2.2rem); line-height: 1; }
+  .item i { font-style: normal; font-size: 0.6em; }
+  @keyframes slide { to { translate: -50% 0; } }
+</style>

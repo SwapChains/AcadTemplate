@@ -1,0 +1,67 @@
+---
+import Media from './Media.astro';
+import Icon from './Icon.astro';
+import SectionHeader from './SectionHeader.astro';
+import { modalities, whatsappLink } from '../data/site';
+---
+
+<section class="section" id="modalidades">
+  <div class="container">
+    <SectionHeader eyebrow="Modalidades" title="Escolha como quer evoluir" text="Do ferro à luta, do cardio à mobilidade. Todas as aulas com professores formados e turmas acompanhadas de perto." />
+  </div>
+
+  <ul class="container cards">
+    {modalities.map((m, i) => (
+      <li class="card" data-reveal style={`--i:${i % 3}`}>
+        <a href={whatsappLink(`Olá! Quero fazer uma aula experimental de ${m.name}.`)} target="_blank" rel="noopener">
+          <Media name={m.image} alt={m.name} widths={[400, 640, 900]} sizes="(max-width: 760px) 80vw, 33vw" class="card-media" />
+          <div class="card-body">
+            <span class="num display">{String(i + 1).padStart(2, '0')}</span>
+            <span class="level">{m.level}</span>
+            <h3 class="display">{m.name}</h3>
+            <p>{m.text}</p>
+            <span class="more">Agendar aula <Icon name="arrow" /></span>
+          </div>
+        </a>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .card a { position: relative; display: block; aspect-ratio: 4 / 5; border-radius: var(--radius); overflow: hidden; text-decoration: none; isolation: isolate; }
+  .card :global(.card-media) { position: absolute; inset: 0; z-index: -1; }
+  .card :global(.card-media img) { filter: grayscale(1) brightness(0.75); transition: filter 0.6s, scale 0.8s var(--ease-out); }
+  .card a:hover :global(.card-media img), .card a:focus-visible :global(.card-media img) { filter: grayscale(0) brightness(0.85); scale: 1.06; }
+  .card a::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgb(0 0 0 / 0.9), transparent 60%); }
+
+  .card-body { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 1.5rem; gap: 0.5rem; }
+  .num { position: absolute; top: 1rem; right: 1.25rem; font-size: 3.5rem; color: transparent; -webkit-text-stroke: 1px rgb(255 255 255 / 0.4); transition: -webkit-text-stroke-color 0.4s; }
+  .card a:hover .num { -webkit-text-stroke-color: var(--c-accent); }
+  .level { align-self: flex-start; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; padding: 0.3rem 0.7rem; border-radius: 99px; background: rgb(255 255 255 / 0.1); backdrop-filter: blur(6px); }
+  h3 { font-size: clamp(1.8rem, 3vw, 2.4rem); }
+  /* Descrição e "Agendar" aparecem no hover (desktop) */
+  p, .more { max-height: 0; overflow: hidden; opacity: 0; transition: opacity 0.4s, max-height 0.5s var(--ease-out); }
+  p { color: rgb(255 255 255 / 0.75); font-size: 0.95rem; line-height: 1.5; }
+  .more { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--c-accent); font-weight: 600; font-size: 0.9rem; }
+  .more :global(svg) { width: 1rem; height: 1rem; }
+  .card a:hover p, .card a:focus-visible p { opacity: 1; max-height: 6rem; }
+  .card a:hover .more, .card a:focus-visible .more { opacity: 1; max-height: 2rem; }
+
+  @media (hover: none) {
+    p, .more { opacity: 1; max-height: none; }
+    .card :global(.card-media img) { filter: grayscale(0.3) brightness(0.75); }
+  }
+
+  /* Mobile: carrossel horizontal com scroll-snap, sem biblioteca */
+  @media (max-width: 760px) {
+    .cards {
+      width: 100%; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 78%;
+      overflow-x: auto; scroll-snap-type: x mandatory; padding-inline: var(--gutter); scroll-padding-inline: var(--gutter);
+      scrollbar-width: none;
+    }
+    .cards::-webkit-scrollbar { display: none; }
+    .card { scroll-snap-align: start; }
+  }
+</style>

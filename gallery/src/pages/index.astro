@@ -1,0 +1,63 @@
+---
+// Lists every template that has a template.json (folders starting with "_" are ignored).
+interface TemplateMeta {
+  name: string;
+  category: string;
+  description: string;
+  status: 'em-desenvolvimento' | 'pronto';
+  accent: string;
+}
+
+const metas = import.meta.glob<TemplateMeta>('../../../templates/*/template.json', {
+  eager: true,
+  import: 'default',
+});
+
+const templates = Object.entries(metas)
+  .map(([path, meta]) => ({ slug: path.split('/').at(-2)!, ...meta }))
+  .filter((t) => !t.slug.startsWith('_'));
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+---
+
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Website Models — Demonstrações</title>
+    <meta name="description" content="Templates de websites modernos para estabelecimentos." />
+    <style>
+      :root { color-scheme: dark; --bg: #0c0c0e; --fg: #f2f2f2; --muted: #9a9aa2; --line: #24242a; }
+      * { box-sizing: border-box; margin: 0; }
+      body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--fg); min-height: 100dvh; padding: clamp(1.5rem, 5vw, 4rem); }
+      header { max-width: 70rem; margin: 0 auto 3rem; }
+      h1 { font-size: clamp(2rem, 6vw, 4rem); letter-spacing: -0.03em; line-height: 1; }
+      header p { color: var(--muted); margin-top: 1rem; max-width: 40ch; }
+      ul { list-style: none; padding: 0; max-width: 70rem; margin: 0 auto; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); }
+      a { display: block; height: 100%; padding: 1.5rem; border: 1px solid var(--line); border-radius: 1rem; color: inherit; text-decoration: none; transition: border-color .2s, transform .2s; }
+      a:hover, a:focus-visible { border-color: var(--accent); transform: translateY(-3px); }
+      .cat { font-size: .75rem; text-transform: uppercase; letter-spacing: .12em; color: var(--accent); }
+      h2 { margin: .5rem 0; font-size: 1.4rem; }
+      .desc { color: var(--muted); font-size: .95rem; line-height: 1.5; }
+      .status { display: inline-block; margin-top: 1rem; font-size: .75rem; color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: .2rem .6rem; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Website Models</h1>
+      <p>Templates modernos, animados e rápidos para estabelecimentos. Clique para ver a demonstração.</p>
+    </header>
+    <ul>
+      {templates.map((t) => (
+        <li>
+          <a href={`${base}${t.slug}/`} style={`--accent:${t.accent}`}>
+            <span class="cat">{t.category}</span>
+            <h2>{t.name}</h2>
+            <p class="desc">{t.description}</p>
+            <span class="status">{t.status === 'pronto' ? 'Pronto' : 'Em desenvolvimento'}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </body>
+</html>

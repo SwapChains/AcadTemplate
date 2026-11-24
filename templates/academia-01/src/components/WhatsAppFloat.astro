@@ -1,0 +1,39 @@
+---
+import Icon from './Icon.astro';
+import { whatsappLink } from '../data/site';
+---
+
+<a class="wa" href={whatsappLink()} target="_blank" rel="noopener" aria-label="Falar no WhatsApp" data-wa>
+  <Icon name="whatsapp" />
+  <span class="label">Aula grátis</span>
+</a>
+
+<style>
+  .wa {
+    position: fixed; right: clamp(1rem, 3vw, 1.75rem); bottom: clamp(1rem, 3vw, 1.75rem); z-index: 40;
+    display: flex; align-items: center; gap: 0.6rem;
+    height: 3.5rem; padding: 0 1.05rem; border-radius: 99px;
+    background: #25d366; color: #fff; text-decoration: none; font-weight: 700;
+    box-shadow: 0 10px 30px -8px rgb(37 211 102 / 0.6);
+    opacity: 0; translate: 0 1.5rem; pointer-events: none;
+    transition: opacity 0.4s, translate 0.5s var(--ease-out);
+  }
+  .wa.is-visible { opacity: 1; translate: 0 0; pointer-events: auto; }
+  .wa :global(svg) { width: 1.5rem; height: 1.5rem; }
+  .wa::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; border: 2px solid #25d366;
+    animation: ping 2.4s var(--ease-out) infinite;
+  }
+  @keyframes ping { from { opacity: 0.8; scale: 1; } to { opacity: 0; scale: 1.35; } }
+  .label { max-width: 0; overflow: hidden; white-space: nowrap; transition: max-width 0.4s var(--ease-out); }
+  .wa:hover .label { max-width: 8rem; }
+</style>
+
+<script>
+  // Aparece depois que o hero sai da tela.
+  const wa = document.querySelector<HTMLElement>('[data-wa]');
+  const hero = document.querySelector('#inicio');
+  if (wa && hero && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => wa.classList.toggle('is-visible', !e.isIntersecting), { threshold: 0.15 }).observe(hero);
+  } else wa?.classList.add('is-visible');
+</script>

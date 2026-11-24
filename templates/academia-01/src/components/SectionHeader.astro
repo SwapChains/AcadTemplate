@@ -1,0 +1,23 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  text?: string;
+  align?: 'left' | 'center';
+}
+const { eyebrow, title, text, align = 'left' } = Astro.props;
+---
+
+<header class:list={['sh', `sh--${align}`]}>
+  <p class="eyebrow" data-reveal>{eyebrow}</p>
+  <h2 class="display" data-reveal style="--i:1">{title}</h2>
+  {text && <p class="sh-text" data-reveal style="--i:2">{text}</p>}
+  <slot />
+</header>
+
+<style>
+  .sh { display: grid; gap: 1rem; margin-bottom: clamp(2.5rem, 6vw, 4rem); max-width: 48rem; }
+  .sh--center { margin-inline: auto; text-align: center; justify-items: center; }
+  h2 { font-size: var(--fs-h2); }
+  .sh-text { color: var(--c-muted); font-size: 1.1rem; max-width: 50ch; }
+</style>
